@@ -1,5 +1,6 @@
 package com.example.android_pokedex
 
+import com.example.android_pokedex.ApiPokemon
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +11,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +34,16 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = PokemonAdapter(getPokemonList())
         recyclerView.adapter = adapter
+
+        GlobalScope.launch {
+            val apiPokemon = ApiPokemon()
+            val response = apiPokemon.getRequest("https://pokeapi.co/api/v2/pokemon/ditto")
+
+            withContext(Dispatchers.Main) {
+                // Traitez la réponse ici (sur le thread principal)
+                println(response)
+            }
+        }
     }
 
     private fun getPokemonList(): List<Pokemon> {
