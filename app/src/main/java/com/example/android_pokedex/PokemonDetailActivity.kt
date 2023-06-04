@@ -18,7 +18,7 @@ class PokemonDetailActivity : AppCompatActivity() {
         val imageView = findViewById<ImageView>(R.id.imageView)
         val descriptionTextView = findViewById<TextView>(R.id.descriptionTextView)
 
-        nameTextView.text = pokemon?.nom
+        nameTextView.text = pokemon?.name
         // Utilisez une bibliothèque comme Picasso ou Glide pour charger l'image à partir de l'URL
         // imageView.load(pokemon?.image)
         descriptionTextView.text = pokemon?.description

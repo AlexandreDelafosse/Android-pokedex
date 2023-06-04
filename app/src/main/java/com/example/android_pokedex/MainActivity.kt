@@ -11,8 +11,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -24,34 +26,41 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         //val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         //recyclerView.adapter = PokemonAdapter(pokemons)
         //recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Configuration du RecyclerView et de l'adapter
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = PokemonAdapter(getPokemonList())
-        recyclerView.adapter = adapter
-
         GlobalScope.launch {
-            val apiPokemon = ApiPokemon()
-            val response = apiPokemon.getRequest("https://pokeapi.co/api/v2/pokemon/ditto")
-
+            val pokemonList = getPokemonList()
             withContext(Dispatchers.Main) {
-                // Traitez la réponse ici (sur le thread principal)
-                println(response)
+                adapter = PokemonAdapter(pokemonList)
+                recyclerView.adapter = adapter
             }
         }
     }
 
-    private fun getPokemonList(): List<Pokemon> {
-        return listOf(
-            Pokemon("Pikachu", "pikachu_image", "Description de Pikachu"),
-            Pokemon("Bulbasaur", "bulbasaur_image", "Description de Bulbasaur"),
-            Pokemon("Charmander", "charmander_image", "Description de Charmander")
-        )
+    @OptIn(DelicateCoroutinesApi::class)
+    private suspend fun getPokemonList(): List<Pokemon> = coroutineScope {
+        val numbers = mutableListOf(Pokemon("Pikachu", "pikachu_image", "Description de Pikachu"))
+
+        for (i in 1..15) {
+            val response = ApiPokemon().getRequest("https://pokeapi.co/api/v2/pokemon/$i")
+
+            if (i == 1) {
+                withContext(Dispatchers.Main) {
+                    numbers[0] = Pokemon(response.name, response.name+"_image", "Description de ${response.name}")
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    numbers.add(Pokemon(response.name, response.name+"_image", "Description de ${response.name}"))
+                }
+            }
+        }
+        numbers
     }
     inner class PokemonAdapter(private val pokemons: List<Pokemon>) :
         RecyclerView.Adapter<PokemonAdapter.ViewHolder>() {
@@ -76,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             private val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
             fun bind(pokemon: Pokemon) {
-                nameTextView.text = pokemon.nom
+                nameTextView.text = pokemon.name
                 // Utilisez une bibliothèque comme Picasso ou Glide pour charger l'image à partir de l'URL
                 // imageView.load(pokemon.image)
 

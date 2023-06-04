@@ -32,7 +32,7 @@ class PokemonAdapter(private val pokemons: List<Pokemon>) :
         private val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
         fun bind(pokemon: Pokemon) {
-            nameTextView.text = pokemon.nom
+            nameTextView.text = pokemon.name
             // Utilisez une bibliothèque comme Picasso ou Glide pour charger l'image à partir de l'URL
             // imageView.load(pokemon.image)
 
