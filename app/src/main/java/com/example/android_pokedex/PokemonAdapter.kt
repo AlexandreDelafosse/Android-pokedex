@@ -32,9 +32,11 @@ class PokemonAdapter(private val pokemons: List<Pokemon>) :
         private val imageView: ImageView = itemView.findViewById(R.id.imageView)
 
         fun bind(pokemon: Pokemon) {
-            nameTextView.text = pokemon.name
-            // Utilisez une bibliothèque comme Picasso ou Glide pour charger l'image à partir de l'URL
-            // imageView.load(pokemon.image)
+            nameTextView.text = pokemon.name.capitalize()
+
+            val resourceId = itemView.context.resources.getIdentifier(pokemon.image, "drawable", itemView.context.packageName)
+            imageView.setImageResource(resourceId)
+
 
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, PokemonDetailActivity::class.java)

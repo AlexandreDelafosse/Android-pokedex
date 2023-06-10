@@ -3,6 +3,7 @@ package com.example.android_pokedex
 // Pokemon.kt
 import android.os.Parcel
 import android.os.Parcelable
+import java.util.Locale
 
 data class Pokemon(val name: String, val image: String, val description: String) : Parcelable {
     constructor(parcel: Parcel) : this(
