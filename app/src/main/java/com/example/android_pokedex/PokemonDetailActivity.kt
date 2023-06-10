@@ -18,7 +18,7 @@ class PokemonDetailActivity : AppCompatActivity() {
         val imageView = findViewById<ImageView>(R.id.imageView)
         val descriptionTextView = findViewById<TextView>(R.id.descriptionTextView)
 
-        nameTextView.text = pokemon?.name
+        nameTextView.text = pokemon?.name?.capitalize()
 
         imageView.setImageResource(resources.getIdentifier(pokemon?.image, "drawable", packageName))
 
